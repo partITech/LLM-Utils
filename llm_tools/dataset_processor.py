@@ -117,8 +117,7 @@ class DatasetProcessor:
                 data = json.loads(line)
 
                 if mode == 'hf':
-                    formatted_data = self\
-                        .format_data_from_hf_tokenizer(data, instruct)
+                    formatted_data = self.format_data_from_hf_tokenizer(data, instruct)
                 elif mode == 'mistral':
                     formatted_data = self.format_data_from_mistral_common(data, instruct)
                 else:

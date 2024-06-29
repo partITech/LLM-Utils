@@ -10,8 +10,7 @@ setuptools.setup(
     install_requires=[
         'datasets',
         'mistral_common',
-        'transformers',
-        'PyTorch'
+        'transformers'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

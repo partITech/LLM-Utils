@@ -6,7 +6,7 @@ Should not be usefully for anyone except us.
 DatasetProcessor : used to convert personal context_qa.load_v2 jsonl files to huggingface Datasets object that could be directly used by the trainer wit the 'text'
 like 
 ```python
-!pip install git+https://github.com/GeraudBourdin/LLM-Utils@main
+!pip install git+https://github.com/partITech/LLM-Utils@main
 ```
 
 ```python

@@ -46,17 +46,7 @@ class DatasetProcessor:
     def get_max_token_length(self):
         return self.max_dataset_token_length
 
-    def format_data_from_mistral_common(self, data: Dict, instruct: str = '') -> Dict:
-        dataset = {}
-        chat = self.conver_to_chat(data, instruct)
 
-        tokenized = self.mistralTokenizer.encode_chat_completion(ChatCompletionRequest(messages=chat))
-        dataset['chat'] = chat
-        dataset['json'] = data
-        dataset['text'] = tokenized.text.replace('[INST][/INST]', '').replace(' [INST]  [/INST]', '')
-        dataset['length'] = len(tokenized.tokens)
-        self.max_dataset_token_length = max(dataset['length'], self.max_dataset_token_length)
-        return dataset
 
     def conver_to_chat(self, data: Dict, instruct: str = '') -> Dict:
         prompt = ""
@@ -95,17 +85,26 @@ class DatasetProcessor:
         dataset = {}
         chat = self.conver_to_chat(data, instruct)
 
-        hf_text = self.hf_tokenizer.apply_chat_template(chat, tokenize=False)
-        hf_tokens = self.hf_tokenizer.apply_chat_template(chat, tokenize=True)
+        dataset['chat'] = chat
+        dataset['json'] = data
+        dataset['text'] = self.hf_tokenizer.apply_chat_template(chat, tokenize=False).replace('[INST][/INST]',
+                                                                                              '').replace(
+            ' [INST]  [/INST]', '').replace('[INST] [/INST]', '')
+        dataset['length'] = len(self.hf_tokenizer.apply_chat_template(chat, tokenize=True))
+        self.max_dataset_token_length = max(dataset['length'], self.max_dataset_token_length)
+        del chat
+        return dataset
+
+    def format_data_from_mistral_common(self, data: Dict, instruct: str = '') -> Dict:
+        dataset = {}
+        chat = self.conver_to_chat(data, instruct)
 
         tokenized = self.mistralTokenizer.encode_chat_completion(ChatCompletionRequest(messages=chat))
         dataset['chat'] = chat
         dataset['json'] = data
-        dataset['text'] = self.hf_tokenizer.apply_chat_template(chat, tokenize=False).replace('[INST][/INST]', '').replace(
-            ' [INST]  [/INST]', '').replace('[INST] [/INST]', '')
-        dataset['length'] = len(self.hf_tokenizer.apply_chat_template(chat, tokenize=True))
+        dataset['text'] = tokenized.text.replace('[INST][/INST]', '').replace(' [INST]  [/INST]', '')
+        dataset['length'] = len(tokenized.tokens)
         self.max_dataset_token_length = max(dataset['length'], self.max_dataset_token_length)
-        del chat, hf_text, hf_tokens
         return dataset
 
     def get_dataset_from_file(self, file: str, mode: str = 'hf', instruct: str = '') -> Dict:
